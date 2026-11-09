@@ -99,6 +99,8 @@
         .switch::after { content: ''; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); transition: transform .2s; }
         .menu-item[aria-checked="true"] .switch { background: var(--pine); }
         .menu-item[aria-checked="true"] .switch::after { transform: translateX(-18px); }
+        .menu-credit { margin: 4px 6px 2px; padding: 10px 6px 6px; border-top: 1px solid var(--line); font: 400 12px/1.5 var(--font); color: var(--muted); text-align: center; }
+        .menu-credit b { font-weight: 600; color: var(--ink-2); }
         .menu-item[aria-checked="true"] .menu-ico { color: var(--pine); }
 
         /* ===== فلتر الخريطة حسب التصنيف ===== */
@@ -547,6 +549,7 @@
                 <span class="menu-text">الوضع الداكن</span>
                 <span class="switch" aria-hidden="true"></span>
             </button>
+            <p class="menu-credit">صُنع بواسطة <b>بدر فؤاد</b> و<b>مجد سامي</b></p>
         </div>
         <div class="top-search">
             <div class="relative" id="searchWrap">
@@ -4426,15 +4429,82 @@
         }
         $('botSuggest').addEventListener('click', e => { const b = e.target.closest('button'); if (b) ask(b.textContent); });
 
+        // ===== شخصية دلني =====
+        // طالب سنة رابعة لطيف، حافظ الجامعة شبر شبر، بحكي أردني وبحب يمزح شوي
+        const pick = a => a[Math.floor(Math.random() * a.length)];
+        function timeHello() {
+            const h = new Date().getHours();
+            if (h < 5) return 'سهرانين؟ 🌙';
+            if (h < 12) return 'صباح الخير ☀️';
+            if (h < 18) return 'أهلين 👋';
+            return 'مسا الخير 🌆';
+        }
+        function walkQuip(m) {
+            if (m <= 3) return pick(['قريبة كتير، ما بتلحق تخلّص الأغنية 🎧', 'خطوتين وبتكون هناك.']);
+            if (m <= 8) return pick(['مشوار لطيف 🚶', 'على قد مشوار قهوة ☕']);
+            if (m <= 15) return pick(['شوية مشي، بس بتحرق الفطور 😄', 'خذ نفس وامشِ، بتوصل.']);
+            return pick(['بعيدة شوي… خذ مي معك 💧', 'مشوار محترم! إذا محاضرتك قريبة اطلع هلأ 🏃']);
+        }
+        const JOKES = [
+            'ليش طالب الهندسة دايماً متأخر؟ لأنه بيحسب أقصر طريق… وبنسى يمشيه 😄',
+            'المشي بالجامعة الأردنية رياضة رسمية، ما في داعي للجيم 💪',
+            'سألوا طالب سنة أولى وين قاعة 104، قال أكيد بالطابق الأول… وطلعت بمبنى ثاني 🙃 عشان هيك أنا موجود.',
+            'أسرع إشي بالجامعة؟ طالب سمع إنه الدكتور لغى المحاضرة 🏃💨',
+            'قالوا القهوة ما بتصحّي… واضح إنهم ما جربوا محاضرة الساعة 8 😴☕'
+        ];
+
         // ===== فهم السؤال =====
         function answer(raw) {
             const q = N(raw);
             if (!q) return;
-            if (/^(مرحبا|مرحبتين|هلا|هلو|اهلا|اهلين|السلام|سلام|hi|hello|هاي|صباح|مساء)/.test(q)) {
-                say('أهلاً! اسألني عن أي مكان بالجامعة: كلية، قسم، كافيه، بوابة، أو رقم قاعة، وبدلّك عليه.');
+            const short = q.split(' ').length <= 4;
+            if (/^(مرحبا|مرحبتين|هلا|هلو|اهلا|اهلين|السلام|سلام|hi|hello|هاي|صباح|مساء|مسا)/.test(q)) {
+                say(pick([
+                    `${timeHello()} شو وجهتك اليوم؟ كلية، قاعة، كافيه… قلّي وبدلّك.`,
+                    `هلا والله! ${timeHello()} وين بدنا نروح؟`,
+                    `أهلين فيك 😄 اكتبلي اسم المكان أو رقم القاعة وخليها عليّ.`
+                ]));
                 return suggest(['وين كلية الهندسة؟', 'وين قاعة 6؟', 'أقرب كافيه', 'وين المصلى؟']);
             }
-            if (/(شكرا|يسلمو|مشكور|تسلم|يعطيك العافيه|thanks)/.test(q)) return say('العفو! إذا بدك مكان ثاني، أنا هون.');
+            if (/(شكرا|يسلمو|مشكور|تسلم|يعطيك العافيه|thanks|ثانكس)/.test(q)) return say(pick([
+                'العفو! هاي شغلتي 😄 إذا بدك مكان ثاني أنا هون.',
+                'ولو! بالتوفيق بمحاضرتك 🙏',
+                'تسلم انت! وإذا تهت مرة ثانية… بْدِلَّك 😉'
+            ]));
+            if (/(مين عملك|مين صممك|مين سواك|مين برمجك|مين صنعك|مين طورك|مين المطور|مين عمل الموقع|مين عمل التطبيق|مين ورا|صناع|who made|developer)/.test(q)) {
+                return say(pick([
+                    'اللي عملوني هم <b>بدر فؤاد</b> و<b>مجد سامي</b> 🙌 تعبوا عليّ عشان ما حدا يتوه بالجامعة بعد اليوم.',
+                    'أنا من شغل <b>بدر فؤاد</b> و<b>مجد سامي</b> 😎 هم رسموا الخرائط والمخططات، وأنا بس بدلّ.'
+                ]));
+            }
+            if (/(مين انت|مين حضرتك|انت مين|شو اسمك|عرفني عليك|who are you)/.test(q)) {
+                say('أنا <b>دلني</b> 🧭 اعتبرني طالب سنة رابعة حافظ الجامعة الأردنية شبر شبر، من البوابة الرئيسية لآخر قاعة بالعلمية. شغلتي الوحيدة إني ما أخليك تتوه. عملوني <b>بدر فؤاد</b> و<b>مجد سامي</b>.');
+                return suggest(['شو بتعرف تعمل؟', 'احكيلي نكتة', 'وين كلية الهندسة؟']);
+            }
+            if (/(كيفك|شلونك|كيف حالك|شو اخبارك|كيف الحال|how are you)/.test(q)) return say(pick([
+                'تمام والحمدلله! بكون أحسن لما ألاقيلك المكان اللي بدك ياه 😄 وين رايح؟',
+                'ماشي الحال، مستني حدا يسألني وين قاعة 😅 انت كيفك؟',
+                'زي الفل! جاهز ألف الجامعة معك 🚶'
+            ]));
+            if (/(ضايع|تايه|تهت|ضعت|مش عارف وين|مش لاقي)/.test(q) && short) {
+                say('ولا يهمك، كلنا تهنا أول أسبوع 😅 قلّي وين بدك تروح، أو شغّل موقعك من زر 🎯 على الخريطة وأنا بدلّك من مكانك.');
+                return suggest(['وين البوابة الرئيسية؟', 'أقرب كافيه', 'الكليات']);
+            }
+            if (/(نكته|نكت|ضحكني|اضحكني|كمان وحده|joke)/.test(q)) {
+                say(pick(JOKES));
+                return suggest(['احكيلي كمان وحدة', 'وين أقرب كافيه؟']);
+            }
+            if (/(بحبك|انت رائع|شاطر|كفو|جامد|ممتاز|حلو كتير|يا سلام)/.test(q) && short) return say(pick([
+                'تسلم! هاد من ذوقك 🙏 يلا وين بدنا نروح؟',
+                'كفو عليك انت 😄',
+                'خجلتني والله ☺️ اسألني عن أي مكان.'
+            ]));
+            if (/^(باي|مع السلامه|يلا باي|سلامات|bye)/.test(q)) return say(pick([
+                'بالتوفيق! ولا تنسى قهوتك قبل المحاضرة ☕',
+                'مع السلامة، وإذا تهت… بْدِلَّك 😉',
+                'الله معك! انتبه عالدرج 😄'
+            ]));
+            if (/(غبي|حمار|فاشل|تافه|سخيف)/.test(q) && short) return say('معلش، يمكن ما فهمت عليك منيح 😅 جرّب تكتب اسم المكان أو رقم القاعة وخليني أعوّضك.');
             // جدول الطالب: "وين محاضرتي الجاية؟"
             if (/(محاضرتي|محاضراتي|محاضره الجايه|المحاضره الجايه|جدولي|عندي محاضره)/.test(q) && window.dalleniClasses) {
                 const r = window.dalleniClasses.reply();
@@ -4449,7 +4519,7 @@
                 return;
             }
             if (/(شو بتعرف|شو بتقدر|مساعده|help|كيف استخدم|شو بتعمل)/.test(q)) {
-                say('بقدر:<br>• ألاقيلك أي كلية أو مبنى أو قسم وأوجّهك عليه<br>• ألاقي القاعات والمكاتب والمختبرات داخل المباني اللي إلها مخطط<br>• أقلك شو في كافيهات وأكشاك وبوابات<br>• أحسبلك المسافة ووقت المشي بين مكانين');
+                say('أنا خبير بهالجامعة 😎 بقدر:<br>• ألاقيلك أي كلية أو مبنى أو قسم وأوجّهك عليه<br>• ألاقي القاعات والمكاتب والمختبرات داخل المباني اللي إلها مخطط<br>• أقلك شو في كافيهات وأكشاك وبوابات<br>• أحسبلك المسافة ووقت المشي بين مكانين');
                 return suggest(['شو في كافيهات؟', 'وين مكتب د. هند؟', 'كم المسافة من البوابة الرئيسية للصيدلة؟']);
             }
 
@@ -4469,7 +4539,7 @@
                 }
                 if (a && b) {
                     const w = walkFrom(a.loc, b.loc);
-                    say(`من <b>${esc(a.loc.shortName)}</b> إلى <b>${esc(b.loc.shortName)}</b> تقريباً <b>${fmtD(w.d)}</b>، يعني حوالي <b>${fmtT(w.mins)}</b> مشي.`);
+                    say(`من <b>${esc(a.loc.shortName)}</b> إلى <b>${esc(b.loc.shortName)}</b> تقريباً <b>${fmtD(w.d)}</b>، يعني حوالي <b>${fmtT(w.mins)}</b> مشي. ${walkQuip(w.mins)}`);
                     return cards([placeCard(b.loc)]);
                 }
             }
@@ -4482,17 +4552,17 @@
                 let hits = roomIndex().filter(r => r.num === n);
                 if (!hits.length) hits = roomIndex().filter(r => r.num && r.num.startsWith(n)).slice(0, 5);
                 if (hits.length) {
-                    say(hits.length === 1 ? `لقيتها 👇` : `لقيت ${hits.length} نتائج بهالرقم:`);
+                    say(hits.length === 1 ? pick(['لقيتها 👇', 'هاي هي، على المخطط 👇', 'سهلة! 👇']) : `لقيت ${hits.length} أماكن بهالرقم، أي وحدة قصدك؟`);
                     return cards(hits.slice(0, 5).map(roomCard));
                 }
-                say(`ما لقيت قاعة رقم <b>${n}</b> بالمخططات اللي عندي. المخططات متوفرة حالياً لـ ${Object.values(FLOOR_PLANS).map(p => esc(p.title)).join(' و')} بس.`);
+                say(`قاعة <b>${n}</b>؟ دوّرت بكل المخططات وما لقيتها 🤔 لسا ما رسمت كل المباني. المخططات متوفرة حالياً لـ ${Object.values(FLOOR_PLANS).map(p => esc(p.title)).join(' و')} بس.`);
                 return suggest(Object.values(FLOOR_PLANS).map(p => 'مخطط ' + p.title));
             }
 
             // "مخطط X"
             if (/مخطط|خريطه المبني|الطوابق/.test(q)) {
                 const p = findPlaces(q.replace(/مخطط/g, ''))[0];
-                if (p && FLOOR_PLANS[p.loc.id]) { say('تفضل، هاد مخطط ' + esc(p.loc.shortName) + ':'); return cards([placeCard(p.loc)]); }
+                if (p && FLOOR_PLANS[p.loc.id]) { say('تفضل، مخطط ' + esc(p.loc.shortName) + ' بكل طوابقه 🗺️'); return cards([placeCard(p.loc)]); }
             }
 
             const places = findPlaces(q);
@@ -4513,7 +4583,7 @@
                         return;
                     }
                     list = list.map(l => ({ l, d: walkFrom(userLocation, l).d })).sort((a, b) => a.d - b.d).map(x => x.l);
-                    say(`أقرب ${typeLabel(cat[0])} إلك:`);
+                    say(`أقرب ${typeLabel(cat[0])} إلك ${cat[0] === 'cafe' ? '☕ يلا قبل ما تخلص القهوة' : '👇'}`);
                     return cards(list.slice(0, 3).map(placeCard));
                 }
                 list.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
@@ -4528,7 +4598,7 @@
                 const roomsWin = wantsRoom && rooms.some(r => r.full) && (!top.length || top[0].score < 2);
                 if (roomsWin) rooms.splice(0, rooms.length, ...rooms.filter(r => r.full));
                 if (top.length && !roomsWin && (!rooms.length || top[0].score >= 1)) {
-                    say(top.length === 1 ? 'هاد هو 👇' : 'لقيت أكثر من مكان، أي واحد قصدك؟');
+                    say(top.length === 1 ? pick(['هاد هو 👇', 'لقيته! 👇', 'على عيني 👇', 'أكيد بعرفه 😎👇']) : 'لقيت أكثر من مكان بهالاسم، أي واحد قصدك؟');
                     out.push(...top.map(p => placeCard(p.loc)));
                 }
                 if (rooms.length) {
@@ -4538,7 +4608,11 @@
                 return cards(out);
             }
 
-            say('ما قدرت ألاقي هالمكان. جرّب تكتب اسم الكلية أو المبنى أو رقم القاعة، مثلاً "كلية الحقوق" أو "قاعة 104".');
+            say(pick([
+                'همم، هاي ما عرفتها 🤔 جرّب تكتب اسم الكلية أو المبنى أو رقم القاعة، مثلاً "كلية الحقوق" أو "قاعة 104".',
+                'والله حفظت الجامعة كلها بس هاي فاتتني 😅 جرّب اسم ثاني للمكان أو رقم القاعة.',
+                'ما لقيت هالمكان. يمكن مكتوب بطريقة ثانية؟ جرّب "كلية الطب" أو "قاعة 6".'
+            ]));
             suggest(['شو بتعرف تعمل؟', 'الكليات', 'شو في كافيهات؟', 'البوابات']);
         }
 
@@ -4547,7 +4621,7 @@
             add(esc(text), 'msg msg-user');
             input.value = '';
             const t = add('<span></span><span></span><span></span>', 'typing');
-            setTimeout(() => { t.remove(); try { answer(text); } catch (e) { console.error(e); say('صار خطأ بسيط، جرّب تسأل بطريقة ثانية.'); } }, 380);
+            setTimeout(() => { t.remove(); try { answer(text); } catch (e) { console.error(e); say('أوبس، تلخبطت شوي 😵‍💫 جرّب تسأل بطريقة ثانية.'); } }, 380);
         }
 
         // ===== فتح وإغلاق =====
@@ -4556,8 +4630,8 @@
             overlay.classList.add('open'); document.body.classList.add('bot-open');
             if (!greeted) {
                 greeted = true;
-                say('أهلاً، أنا مساعد دلني 👋 اسألني وين أي مكان بالجامعة، أو اكتب رقم القاعة وبطلعلك ياها على المخطط.');
-                suggest(['وين كلية الهندسة؟', 'وين قاعة 6؟', 'شو في كافيهات؟', 'وين المصلى؟', 'كم المسافة من البوابة الرئيسية للصيدلة؟']);
+                say(`${timeHello()} أنا <b>دلني</b> 🧭 حافظ الجامعة الأردنية شبر شبر. اسألني وين أي مكان، أو اكتب رقم القاعة وبطلعلك ياها على المخطط.`);
+                suggest(['وين كلية الهندسة؟', 'وين قاعة 6؟', 'شو في كافيهات؟', 'مين انت؟', 'احكيلي نكتة']);
             }
             if (matchMedia('(min-width: 768px)').matches) input.focus();
         }

@@ -28,6 +28,8 @@
 
 © 2026 دلني. جميع الحقوق محفوظة.
 
-الكود منشور هنا حتى يشتغل الموقع على GitHub Pages فقط. ممنوع نسخه أو إعادة استخدامه أو نشره في مشروع آخر بدون إذن مكتوب من صاحب المشروع.
+صُنع بواسطة **بدر فؤاد** و**مجد سامي**. Made by **Bader Fouad** and **Majd Sami**.
+
+الكود منشور هنا حتى يشتغل الموقع على GitHub Pages فقط. ممنوع نسخه أو إعادة استخدامه أو نشره في مشروع آخر بدون إذن مكتوب من أصحاب المشروع.
 
 All rights reserved. This code is published only to host the website. Copying, reusing or redistributing it without written permission is not allowed.
